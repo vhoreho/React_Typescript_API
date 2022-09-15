@@ -1,26 +1,25 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { useState } from 'react'
+import { Card } from './components/Card';
+import { Form } from "./components/Form";
+import { getReposFromGithub } from './service/getUser';
+import { ReposVM } from './types/reposVM';
 
-function App() {
+export function App() {
+  const [repos, setRepos] = useState<ReposVM[]>([])
+
+  const handleGetUsers = async (username: string) => {
+    const repos = await getReposFromGithub(username);
+    setRepos(repos)
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className=" min-h-screen flex items-center py-6 w-3/4 mx-auto flex-col">
+      <Form onGetUser={handleGetUsers} />
+      <div className='pt-4 border-b-2 h-3 w-full mb-4'></div>
+      {!repos.length && <h2>Repositories is empty</h2>}
+      <div className='flex flex-wrap gap-4 justify-center'>
+        {repos && repos.map(card => <Card key={card.id} data={card} />)}
+      </div>
     </div>
   );
 }
-
-export default App;
